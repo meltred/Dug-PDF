@@ -1,2 +1,4 @@
 venv
 .env
+hospital
+langchain_intro/__pycache__

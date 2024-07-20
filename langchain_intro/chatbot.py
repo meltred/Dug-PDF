@@ -11,7 +11,7 @@ from langchain.agents import Tool, AgentType, initialize_agent
 
 from langchain_core.output_parsers import StrOutputParser
 print(dotenv.load_dotenv())
-chat_model = ChatGoogleGenerativeAI(temperature=0, model="gemini-pro")
+chat_model = ChatGoogleGenerativeAI(temperature=0, model="gemini-1.0-pro")
 from langchain_community.vectorstores import Chroma
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain.schema.runnable import RunnablePassthrough
@@ -69,6 +69,10 @@ review_chain = (
     | chat_model
     | StrOutputParser()
 )
+def get_current_time(name: str) -> int:
+    print("it called")
+    return 12
+
 tools = [
     Tool(
         name="Reviews",
@@ -85,7 +89,7 @@ tools = [
     ),
     Tool(
         name="Waits",
-        func=get_current_wait_time,
+        func=get_current_time,
         description="""Use when asked about current wait times
         at a specific hospital. This tool can only get the current
         wait time at a hospital and does not have any information about
@@ -122,3 +126,11 @@ agent = ( # not seems to work
 )
 
 agent_executer = AgentExecutor(agent=agent, tools=tools, verbose=True)
+def test_agent_execution(tool_name: str, input_data: str):
+    for tool in tools:
+        if tool.name == tool_name:
+            result = tool.func(input_data)
+            print(f"Output from tool '{tool_name}': {result}")
+            return result
+    print("Tool not found")
+    return None
