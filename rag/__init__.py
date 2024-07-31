@@ -2,7 +2,7 @@ import google.generativeai as genai
 import dotenv
 import os
 import time
-
+import streamlit as st
 print(dotenv.load_dotenv())
 key = os.getenv("GOOGLE_API_KEY")
 genai.configure(api_key=key)
@@ -42,6 +42,15 @@ Helpful Answer:"""
     result = qa_chain({"query": text})
     return result["result"]
 
-question = "Describe the Multi-head attention layer in detail?"
-print(chain(question))
 
+with st.sidebar:
+        st.title(":blue[A Retrieval Augmented System on the 'Leave No Context Behind' Paper]")
+st.title(":blue[💬Document Chatbot]")
+query = st.text_area("Enter your query:", placeholder="Enter your query here...", height=100)
+
+if st.button("Submit Your Query"):
+    if query:
+        response = chain(query)
+        st.write(response)
+    else:
+        st.warning("Please enter a question.")
