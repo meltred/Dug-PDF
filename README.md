@@ -2,8 +2,10 @@
 ## How to start ??
 ``` pip install poetry ```
 ### install dependencies
-``` poetry install ```
-### start the virtual env
 ``` poetry shell ```
+### start the virtual env
+``` poetry install ```
+### create .env and write 
+```GOOGLE_API_KEY=```
 ### Run the code
-``` poetry rag/__init__.py```
+``` streamlit run rag/__init__.py```
