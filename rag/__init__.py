@@ -58,7 +58,10 @@ query = st.text_area("Enter your query:", placeholder="Enter your query here..."
 
 if st.button("Submit Your Query"):
     if query:
-        response = chain(query)
-        st.write(response)
+        if uploaded_file is not None:
+            response = chain(query)
+            st.write(response)
+        else:
+            st.warning("Please upload a pdf file.")
     else:
         st.warning("Please enter a question.")
