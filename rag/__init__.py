@@ -17,6 +17,10 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from TextSplitter import Splitter
 from GenerateEmb import GenerateEmbedding
+#
+from langchain.chains import create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_core.prompts import ChatPromptTemplate
 
 
 uploaded_file = st.file_uploader('chooose a pdf file', type='pdf')
@@ -35,20 +39,22 @@ if uploaded_file is not None:
         vector_index = GenerateEmbedding(texts)
         print("again")
 
-template = """Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer. Keep the answer as concise as possible. Always say "thanks for asking!" at the end of the answer.
-{context}
-Question: {question}
-Helpful Answer:"""
-QA_CHAIN_PROMPT = PromptTemplate.from_template(template)# Run chain
-def chain(text):
-    qa_chain = RetrievalQA.from_chain_type(
-            llm=model,
-            retriever=vector_index,
-            return_source_documents=True,
-            chain_type_kwargs={"prompt": QA_CHAIN_PROMPT}
-            )
-    result = qa_chain({"query": text})
-    return result["result"]
+
+
+system_prompt = ("You are an assistant for question-answering tasks. "
+    "Use the following pieces of retrieved context to answer "
+    "the question. If you don't know the answer, say that you "
+    "don't know. Use three sentences maximum and keep the "
+    "answer concise."
+    "\n\n"
+    "{context}"
+ )
+
+prompt = ChatPromptTemplate.from_messages([
+    ("system", system_prompt),
+    ("human", "{input}"),
+    ])# Run chain
+
 
 
 with st.sidebar:
@@ -59,8 +65,11 @@ query = st.text_area("Enter your query:", placeholder="Enter your query here..."
 if st.button("Submit Your Query"):
     if query:
         if uploaded_file is not None:
-            response = chain(query)
-            st.write(response)
+            question_answer_chain = create_stuff_documents_chain(model, prompt)
+            rag_chain = create_retrieval_chain(vector_index, question_answer_chain)
+            for chunk in rag_chain.stream({"input": query}):
+                 if answer_chunk := chunk.get("answer"):
+                    st.write(f"{answer_chunk}|", end="")
         else:
             st.warning("Please upload a pdf file.")
     else:
