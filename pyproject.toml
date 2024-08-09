@@ -17,6 +17,7 @@ pandas = "^2.2.2"
 langchain-community = "^0.2.10"
 streamlit = "^1.37.0"
 pdfplumber = "^0.11.2"
+textsplitter = "^1.0.3"
 
 
 [build-system]

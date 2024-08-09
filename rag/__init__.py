@@ -12,11 +12,13 @@ from langchain_community.vectorstores import Chroma
 from langchain.chains import RetrievalQA
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from TextSplitter import Splitter
 from GenerateEmb import GenerateEmbedding
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
+from io import BytesIO
+from pypdf import PdfReader
+from langchain.text_splitter import CharacterTextSplitter
 
 dotenv.load_dotenv()
 key = os.getenv("GOOGLE_API_KEY")
@@ -24,15 +26,21 @@ genai.configure(api_key=key)
 
 @st.cache_data
 def process_pdf(uploaded_file):
-    temp_file = "./temp.pdf"
-    with open(temp_file, "wb") as file:
-        file.write(uploaded_file.getvalue())
+    pdf_reader = PdfReader(BytesIO(uploaded_file.read()))
     
-    pdf_loader = PyPDFLoader(temp_file)
-    pages = pdf_loader.load_and_split()
-    texts = Splitter(pages)
+    text = ""
+    for page in pdf_reader.pages:
+        text += page.extract_text()
     
-    # Instead of returning the vector_index, return the texts
+    text_splitter = CharacterTextSplitter(
+        separator="\n",
+        chunk_size=1000,
+        chunk_overlap=200,
+        length_function=len
+    )
+    
+    texts = text_splitter.split_text(text)
+    
     return texts
 
 def create_vector_index(texts):
