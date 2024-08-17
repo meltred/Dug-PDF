@@ -9,3 +9,5 @@
 ```GOOGLE_API_KEY=```
 ### Run the code
 ``` streamlit run rag/__init__.py```
+## Future
+``` will add multimodal support```
