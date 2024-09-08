@@ -1,13 +1,25 @@
 # QUESTION YOUR PDF
 ## How to start ??
-``` pip install poetry ```
+```bash
+  pip install poetry
+```
 ### install dependencies
-``` poetry shell ```
+```bash
+  poetry shell
+```
 ### start the virtual env
-``` poetry install ```
+```bash
+  poetry install
+```
 ### create .env and write 
-```GOOGLE_API_KEY=```
+```bash
+  GOOGLE_API_KEY=
+```
 ### Run the code
-``` streamlit run rag/__init__.py```
+```bash
+  streamlit run rag/__init__.py
+```
 ## Future
-``` will add multimodal support```
+### will add multimodal support in future
+
+
