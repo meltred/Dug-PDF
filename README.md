@@ -20,6 +20,6 @@
   streamlit run rag/__init__.py
 ```
 ## Future
-### will add multimodal support in future
+### will add pdf pages viewer and multimodal support in future 
 
 
